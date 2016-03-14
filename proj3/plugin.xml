@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension-point id="com.proj3.commandExtension" name="commandExtension" schema="schema/com.proj3.commandExtension.exsd"/>
 
    <extension
          id="product"
@@ -17,6 +18,18 @@
                value="project">
          </property>
       </product>
+   </extension>
+   <extension
+         point="com.proj3.commandExtension">
+      <client
+            class="commands.AbsolutePathCommand">
+      </client>
+      <client
+            class="commands.FileNameCommand">
+      </client>
+      <client
+            class="commands.FolderNameCommand">
+      </client>
    </extension>
 
 </plugin>

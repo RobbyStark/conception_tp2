@@ -1,6 +1,6 @@
 
 /*******************************************************************************
- * Code inspiré de:
+ * Code inspiré de :
  * Eclipse JFace Tree - Tutorial
  * Section 3
  * http://www.vogella.com/tutorials/EclipseJFaceTree/article.html
@@ -40,165 +40,151 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 public class TreeViewerPart {
-  private static TreeViewer viewer;
+	private static TreeViewer viewer;
 
-  @PostConstruct
-  public void createControls(Composite parent) {	  
-	  
-    viewer = new TreeViewer(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL |SWT.NONE);
-    viewer.setContentProvider(new ViewContentProvider());
-    viewer.setLabelProvider(new DelegatingStyledCellLabelProvider(new ViewLabelProvider(createImageDescriptor())));
-    
-    
-    viewer.addDoubleClickListener(new IDoubleClickListener() {
-    	  @Override
-    	  public void doubleClick(DoubleClickEvent event) {
-    	    TreeViewer viewer = (TreeViewer) event.getViewer();
-    	    IStructuredSelection thisSelection = (IStructuredSelection) event.getSelection(); 
-    	    Object selectedNode = thisSelection.getFirstElement(); 
-    	    viewer.setExpandedState(selectedNode,
-    	        !viewer.getExpandedState(selectedNode));
-    	  }
-    	}); 
+	@PostConstruct
+	public void createControls(Composite parent) {
+		viewer = new TreeViewer(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL |SWT.NONE);
+		viewer.setContentProvider(new ViewContentProvider());
+		viewer.setLabelProvider(new DelegatingStyledCellLabelProvider(new ViewLabelProvider(createImageDescriptor())));
 
-    
-    Tree tree = (Tree) viewer.getControl();
-    tree.addSelectionListener(new SelectionAdapter() {
-      @Override
-      public void widgetSelected(SelectionEvent e) {
-        TreeItem item = (TreeItem) e.item;
-        CommandsPart.AbsolutePathCommandSetEnabled(true);
-        item.setExpanded(!item.getExpanded());
-          if (item.getItemCount() == 0) {           
-            CommandsPart.FileNameCommandSetEnabled(true); 
-            CommandsPart.FolderNameCommandSetEnabled(false);
-          }
-          else {
-        	  CommandsPart.FileNameCommandSetEnabled(false); 
-        	  CommandsPart.FolderNameCommandSetEnabled(true); 
-          }
-          if (CommandsPart.isAutorun()){
-        	  CommandsPart.autoRun();
-          }
-          viewer.refresh();
-        }
-    }); 
-        
-	new FileChooser(parent);        
-    
-  }
+		viewer.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				TreeViewer viewer = (TreeViewer) event.getViewer();
+				IStructuredSelection thisSelection = (IStructuredSelection) event.getSelection(); 
+				Object selectedNode = thisSelection.getFirstElement(); 
+				viewer.setExpandedState(selectedNode,
+						!viewer.getExpandedState(selectedNode));
+			}
+		}); 
+		
+		// Creates the tree and its selection listener.
+		Tree tree = (Tree) viewer.getControl();
+		tree.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				TreeItem item = (TreeItem) e.item;
+				item.setExpanded(!item.getExpanded());
+				viewer.refresh();
+				
+				// Updates the currentFile and the buttons availability, also
+				// trigger the command if autorun is enabled.
+				CommandsPart.selectedItem();
+			}
+		}); 
 
-  private ImageDescriptor createImageDescriptor() {
-    Bundle bundle = FrameworkUtil.getBundle(ViewLabelProvider.class);
-    URL url = FileLocator.find(bundle, new Path("icons/folder.png"), null);
-    return ImageDescriptor.createFromURL(url);
-  }
+		new FileChooser(parent);
+	}
 
-  class ViewContentProvider implements ITreeContentProvider {
-    public void inputChanged(Viewer v, Object oldInput, Object newInput) {
-    }
+	private ImageDescriptor createImageDescriptor() {
+		Bundle bundle = FrameworkUtil.getBundle(ViewLabelProvider.class);
+		URL url = FileLocator.find(bundle, new Path("icons/folder.png"), null);
+		return ImageDescriptor.createFromURL(url);
+	}
 
-    @Override
-    public void dispose() {
-    }
+	class ViewContentProvider implements ITreeContentProvider {
+		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
+		}
 
-    @Override
-    public Object[] getElements(Object inputElement) {
-      return (File[]) inputElement;
-    }
+		@Override
+		public void dispose() {
+		}
 
-    @Override
-    public Object[] getChildren(Object parentElement) {
-      File file = (File) parentElement;
-      return file.listFiles();
-    }
+		@Override
+		public Object[] getElements(Object inputElement) {
+			return (File[]) inputElement;
+		}
 
-    @Override
-    public Object getParent(Object element) {
-      File file = (File) element;
-      return file.getParentFile();
-    }
-    
+		@Override
+		public Object[] getChildren(Object parentElement) {
+			File file = (File) parentElement;
+			return file.listFiles();
+		}
 
-    @Override
-    public boolean hasChildren(Object element) {
-      File file = (File) element;
-      if (file.isDirectory()) {
-        return true;
-      }
-      return false;
-    }
-  }
+		@Override
+		public Object getParent(Object element) {
+			File file = (File) element;
+			return file.getParentFile();
+		}
 
-  class ViewLabelProvider extends LabelProvider implements IStyledLabelProvider {
-    
-    private ImageDescriptor directoryImage;
-    private ResourceManager resourceManager;
 
-    public ViewLabelProvider(ImageDescriptor directoryImage) {
-      this.directoryImage = directoryImage;
-    }
+		@Override
+		public boolean hasChildren(Object element) {
+			File file = (File) element;
+			if (file.isDirectory()) {
+				return true;
+			}
+			return false;
+		}
+	}
 
-    @Override
-    public StyledString getStyledText(Object element) {
-      if(element instanceof File) {
-        File file = (File) element;
-        StyledString styledString = new StyledString(getFileName(file));
-        String[] files = file.list();
-        if (files != null) {
-          styledString.append(" (" + files.length + ") ",
-              StyledString.COUNTER_STYLER);
-        }
-        return styledString;
-      }
-      return null;
-    }
-    
-    @Override
-    public Image getImage(Object element) {
-      if(element instanceof File) {
-        if(((File) element).isDirectory()) {
-          return getResourceManager().createImage(directoryImage);
-        }
-      }
-      
-      return super.getImage(element);
-    }
-    
-    @Override
-    public void dispose() {
-      if(resourceManager != null) {
-        resourceManager.dispose();
-        resourceManager = null;
-      }
-    }
-    
-    protected ResourceManager getResourceManager() {
-      if(resourceManager == null) {
-        resourceManager = new LocalResourceManager(JFaceResources.getResources());
-      }
-      return resourceManager;
-    }
+	class ViewLabelProvider extends LabelProvider implements IStyledLabelProvider {
 
-    private String getFileName(File file) {
-      String name = file.getName();
-      return name.isEmpty() ? file.getPath() : name;
-    }
-  }
-  
+		private ImageDescriptor directoryImage;
+		private ResourceManager resourceManager;
+
+		public ViewLabelProvider(ImageDescriptor directoryImage) {
+			this.directoryImage = directoryImage;
+		}
+
+		@Override
+		public StyledString getStyledText(Object element) {
+			if(element instanceof File) {
+				File file = (File) element;
+				StyledString styledString = new StyledString(getFileName(file));
+				String[] files = file.list();
+				if (files != null) {
+					styledString.append(" (" + files.length + ") ",
+							StyledString.COUNTER_STYLER);
+				}
+				return styledString;
+			}
+			return null;
+		}
+
+		@Override
+		public Image getImage(Object element) {
+			if(element instanceof File) {
+				if(((File) element).isDirectory()) {
+					return getResourceManager().createImage(directoryImage);
+				}
+			}
+
+			return super.getImage(element);
+		}
+
+		@Override
+		public void dispose() {
+			if(resourceManager != null) {
+				resourceManager.dispose();
+				resourceManager = null;
+			}
+		}
+
+		protected ResourceManager getResourceManager() {
+			if(resourceManager == null) {
+				resourceManager = new LocalResourceManager(JFaceResources.getResources());
+			}
+			return resourceManager;
+		}
+
+		private String getFileName(File file) {
+			String name = file.getName();
+			return name.isEmpty() ? file.getPath() : name;
+		}
+	}
+
 	public static Object getCurrentFile(){		
 		return  ((TreeSelection) viewer.getSelection()).getFirstElement();
 	}
-	
+
+	// Method to change the root of the tree.
 	public static void setRoot(File file){	
-		 viewer.setInput(file.listFiles());
-		 CommandsPart.resetFields(null);
-		 CommandsPart.FileNameCommandSetEnabled(false); 
-		 CommandsPart.FolderNameCommandSetEnabled(false); 
-		 CommandsPart.AbsolutePathCommandSetEnabled(false); 
+		viewer.setInput(file.listFiles());
 	}
-  
-  @Focus
-  public void setFocus() {
-  }
+
+	@Focus
+	public void setFocus() {
+	}
 } 
