@@ -33,7 +33,8 @@
       <client
             class="commands.JsonXmlCoverterCommand">
       </client>
-      <client></client>
+      <client
+            class="commands.MostFrequentWordCommand"></client>
    </extension>
 
 </plugin>

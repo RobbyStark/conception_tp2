@@ -4,6 +4,7 @@ package commands;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import org.json.JSONArray;
@@ -91,10 +92,16 @@ public class JsonXmlCoverterCommand implements ICommand {
 		String name = "";
 		try {
 			scanner = new Scanner(file);
-			name = scanner.useDelimiter("\\A").next();
+			if(scanner.hasNext()) {
+			name = scanner.useDelimiter("\\Z").next();
+			}
 			scanner.close();
 			return name;
-		} catch (FileNotFoundException e) {
+		}
+		catch (NoSuchElementException e) {
+			e.printStackTrace();
+			return "Error";
+		}	catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return "Error";
 		}		
