@@ -22,12 +22,13 @@ public class JsonXmlCoverterCommand implements ICommand {
 	@Override
 	public String run(File file) {
 		
-		String fileContent = readStringFromFile(file);
+		String fileContent = ""; 
 		String convertString = "";
 		String name = file.getAbsoluteFile().toString();
 		
 		if (getExtension(file).equals("json")) {	
-			name = name.replace(".json",".xml");	
+			name = name.replace(".json",".xml");
+			fileContent = readStringFromFile(file);
 			File newFile = new File(name);			
 			
 			JSONObject json = null;
@@ -45,7 +46,8 @@ public class JsonXmlCoverterCommand implements ICommand {
 			writeStringToFile(convertString, newFile);			
 			return ("XML file created");
 		} else if (getExtension(file).equals("xml")) {
-			name = name.replace(".xml",".json");	
+			name = name.replace(".xml",".json");
+			fileContent = readStringFromFile(file);
 			File newFile = new File(name);			
 			
 			try {
