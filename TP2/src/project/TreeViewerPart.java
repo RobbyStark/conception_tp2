@@ -47,6 +47,11 @@ public class TreeViewerPart {
 	* a reference to the tree viewer
 	*/
 	private static TreeViewer viewer;
+	
+	/**
+	* a reference to the tree's root
+	*/
+	private static File root;
 
 	@PostConstruct
 	/**
@@ -199,7 +204,15 @@ public class TreeViewerPart {
 	 * @param file the new root
 	 */	
 	public static void setRoot(File file){	
+		root = file;
 		viewer.setInput(file.listFiles());
+	}
+	
+	/**
+	 * refreshes the view tree
+	 */	
+	public static void refresh(){
+		viewer.setInput(root.listFiles());
 	}
 
 	@Focus

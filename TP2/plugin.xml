@@ -30,6 +30,10 @@
       <client
             class="commands.FolderNameCommand">
       </client>
+      <client
+            class="commands.JsonXmlCoverterCommand">
+      </client>
+      <client></client>
    </extension>
 
 </plugin>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmi:id="_c3AF0MjYEeSyMNYR5xypkQ" elementId="org.eclipse.e4.application" bindingContexts="_c3AF2cjYEeSyMNYR5xypkQ">
-  <children xsi:type="basic:TrimmedWindow" xmi:id="_c3AF0cjYEeSyMNYR5xypkQ" elementId="org.eclipse.e4.window.main" label="LOG8430 TP2" width="700" height="400">
+  <children xsi:type="basic:TrimmedWindow" xmi:id="_c3AF0cjYEeSyMNYR5xypkQ" elementId="org.eclipse.e4.window.main" label="LOG8430 TP2" width="700" height="600">
     <children xsi:type="advanced:PerspectiveStack" xmi:id="_QU7xYOi3EeWZm7zUVR62XQ" elementId="proj3.perspectivestack.0">
       <children xsi:type="advanced:Perspective" xmi:id="_SyTywOi3EeWZm7zUVR62XQ" elementId="proj3.perspective.filechooser" label="file chooser">
         <children xsi:type="basic:PartSashContainer" xmi:id="_ZzEfwOi3EeWZm7zUVR62XQ" elementId="proj3.partsashcontainer.0">

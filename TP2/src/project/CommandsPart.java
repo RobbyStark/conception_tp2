@@ -188,6 +188,7 @@ public class CommandsPart {
 			
 			// Updates the Text field.
 			commandsText.get(commandIndex).setText(result);
+			TreeViewerPart.refresh();
 		}
 	}
 }
