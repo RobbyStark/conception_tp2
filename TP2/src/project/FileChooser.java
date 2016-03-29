@@ -4,16 +4,13 @@ import java.io.File;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.FontMetrics;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Text;
+
 /**
 * This class implements the file chooser for root selection 
 * @author  Francis De LaSalle et Matthieu Boglioni
@@ -25,8 +22,7 @@ import org.eclipse.swt.widgets.Text;
 * http://www.programcreek.com/2010/11/add-a-file-chooserselector-for-eclipse-rcp-development/
 *******************************************************************************/
 public class FileChooser extends Composite {
-
-	Text mText;
+	
 	Button mButton;
 	String title = null;
 
@@ -66,17 +62,6 @@ public class FileChooser extends Composite {
 				TreeViewerPart.setRoot(myFile);
 			}
 		});
-	}
-
-
-	/**
-	 * gets the selected file
-	 * @return the selected file
-	 */	
-	public File getFile() {
-		String text = mText.getText();
-		if (text.length() == 0) return null;
-		return new File(text);
 	}
 
 	/**
