@@ -11,6 +11,8 @@ import java.util.StringTokenizer;
 
 /**
  * This commands returns the most frequent word in a file
+ * algorithme inspiré de
+ * http://stackoverflow.com/questions/8545590/java-find-the-most-popular-element-in-int-array
  */
 
 public class MostFrequentWordCommand implements ICommand {
@@ -19,24 +21,9 @@ public class MostFrequentWordCommand implements ICommand {
 	public String run(File file) {
 		
 		String string = readStringFromFile(file);
-		StringTokenizer tokenizer = new StringTokenizer(string);
-		List<String> words = null;
-		int wordCount = 0;
-		String frequentWord = "";
-		while(tokenizer.hasMoreTokens()) {
-			String currentWord = tokenizer.nextToken();
-			
-	        if (currentWord.equals(frequentWord)) {
-	        	wordCount++;
-	        } else if (wordCount == 0) {
-	        	frequentWord = currentWord;
-	        	wordCount = 1;
-	        } else {
-	        	wordCount--;
-	        }			
-		}		
-		
-		return frequentWord;
+		String [] tokens = string.split("[\\p{Punct}\\s]+");
+		System.out.println(Arrays.toString(tokens));		
+		return getPopularElement(tokens);
 	}
 
 	@Override
@@ -68,4 +55,32 @@ public class MostFrequentWordCommand implements ICommand {
 			return "Error";
 		}		
 	}
+	
+	
+	public String getPopularElement(String[] a)
+	{
+		if (a.length==0){
+			return "";
+		}
+	  int count = 1, tempCount;
+	  String popular = a[0];
+	  String temp = "";
+	  for (int i = 0; i < (a.length - 1); i++)
+	  {
+	    temp = a[i];
+	    tempCount = 0;
+	    for (int j = 1; j < a.length; j++)
+	    {
+	      if (temp.equals(a[j]))
+	        tempCount++;
+	    }
+	    if (tempCount > count)
+	    {
+	      popular = temp;
+	      count = tempCount;
+	    }
+	  }
+	  return popular;
+	}
+	
 }
