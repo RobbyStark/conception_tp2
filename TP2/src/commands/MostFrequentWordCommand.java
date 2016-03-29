@@ -21,8 +21,7 @@ public class MostFrequentWordCommand implements ICommand {
 	public String run(File file) {
 		
 		String string = readStringFromFile(file);
-		String [] tokens = string.split("[\\p{Punct}\\s]+");
-		System.out.println(Arrays.toString(tokens));		
+		String [] tokens = string.split("[\\p{Punct}\\s]+");	
 		return getPopularElement(tokens);
 	}
 

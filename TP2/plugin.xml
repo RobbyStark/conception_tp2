@@ -35,6 +35,9 @@
       </client>
       <client
             class="commands.MostFrequentWordCommand"></client>
+      <client
+            class="commands.LargestFileCommand">
+      </client>
    </extension>
 
 </plugin>
