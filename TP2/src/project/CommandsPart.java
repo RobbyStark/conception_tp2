@@ -31,29 +31,10 @@ import commands.*;
 *******************************************************************************/
 public class CommandsPart {
 	
-	private static File currentFile;
+	public static File currentFile;
 	private static Button autorunButton;
-	/**
-	* A vector containing a reference to the ICommand objects (the plugins).
-	*/
-	private static Vector<ICommand> commands = new Vector<ICommand>();
 	
-	/**
-	 A vector containing a reference to all text fields used by the commands.
-	*/
-	private static Vector<Text> commandsText = new Vector<Text>();
-	
-	
-	/**
-	 A vector containing a reference to all buttons used by the commands.
-	*/
-	private static Vector<Button> commandsButton = new Vector<Button>();
-	
-	/**
-	 A map for the button names and the index of the corresponding element in the
-	 other 3 vectors.
-	 */
-	private static Map<String, Integer> commandNameIndexMap = new HashMap<String, Integer>();
+	private static Vector<Command> commands = new Vector<Command>();
 
 	@PostConstruct
 	/**
@@ -67,27 +48,29 @@ public class CommandsPart {
 		CommandsLoader.load();
 		
 		// Create the Button and Text elements.
-		for (ICommand command : commands) {
+		for (Command command : commands) {
 			Button button = new Button(parent, SWT.NONE);
-			String commandName = command.getClass().getName().replaceFirst("commands.", "");
+			String commandName = command.getCommand().getClass().getName().replaceFirst("commands.", "");
 			button.setText(commandName);
 			button.setData(commandName);
+			button.setData(command);
 			button.addListener(SWT.Selection, new Listener() {
 				public void handleEvent(Event e) {
 					switch (e.type) {
 					case SWT.Selection:
-						CommandsPart.executeCommand(commandName);
+						Command command = (Command) e.widget.getData();
+						command.run();
 						break;
 					}
 				}
 			});
 			button.setEnabled(false);
-			commandsButton.addElement(button);
+			command.setCommandButton(button);
 			
 			Text text = new Text(parent, SWT.READ_ONLY | SWT.BORDER);
 			text.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 			text.setEnabled(false);
-			commandsText.addElement(text);
+			command.setCommandText(text);
 		}
 
 		// Creates the autorun Button.
@@ -113,9 +96,8 @@ public class CommandsPart {
 	 * @param none
 	 */	
 	public static void clear() {
-		
-		for (Text text : commandsText) {
-			text.setText("");
+		for (Command command : commands) {
+			command.getCommandText().setText("");
 		}
 	}
 
@@ -131,7 +113,6 @@ public class CommandsPart {
 	public void save() {
 	}
 	
-	
 	/**
      * Method called when an item of the tree is selected. Updates the currentFile
 	 * and the buttons availability. Parameter is the file item absolute path.
@@ -139,56 +120,30 @@ public class CommandsPart {
 	 */	
 	public static void selectedItem() {
 		currentFile = (File) TreeViewerPart.getCurrentFile();
-		
-		int index = 0;
-		for (ICommand command : commands) {
+		for (Command command : commands) {
 			// Enable the Button and Text field if supported.
-			if ((currentFile.isFile() && command.getSupportFile()) ||
-					(currentFile.isDirectory() && command.getSupportFolder())) {
-				commandsText.get(index).setEnabled(true);
-				commandsButton.get(index).setEnabled(true);
+			if ((currentFile.isFile() && command.getCommand().getSupportFile()) ||
+					(currentFile.isDirectory() && command.getCommand().getSupportFolder())) {
+				command.getCommandText().setEnabled(true);
+				command.getCommandButton().setEnabled(true);
 				
 				// If autorun was enabled, execute the command.
 				if (isAutorun()) {
-					executeCommand((String) commandsButton.get(index).getData());
+					command.run();
 				}
 			} else {
 				// Disable otherwise.
-				commandsText.get(index).setEnabled(false);
-				commandsButton.get(index).setEnabled(false);
+				command.getCommandText().setEnabled(false);
+				command.getCommandButton().setEnabled(false);
 			}
-			index++;
 		}
 	}
 	
 	/**
-	 * addss a command (plugin) to the commands vector.
+	 * Adds a new Command object to the commands vector.
 	 * @param command the new command
 	 */	
-	public static void addCommand(ICommand command) {
+	public static void addCommand(Command command) {
 		commands.addElement(command);
-		commandNameIndexMap.put(
-				command.getClass().getName().replaceFirst("commands.", ""),
-				commands.size() - 1);
-	}
-	
-	/**
-	 * executes a command
-	 * @param commandName the name of the command, must be the exact name of the corresponding class
-	 */	
-	public static void executeCommand(String commandName) {
-		// Obtain the command from the vector.
-		int commandIndex = commandNameIndexMap.get(commandName);
-		ICommand command = commands.get(commandIndex);
-		
-		// Run the command if allowed to (correct File type).
-		if ((currentFile.isFile() && command.getSupportFile()) ||
-				(currentFile.isDirectory() && command.getSupportFolder())) {
-			String result = command.run(currentFile);
-			
-			// Updates the Text field.
-			commandsText.get(commandIndex).setText(result);
-			TreeViewerPart.refresh();
-		}
 	}
 }

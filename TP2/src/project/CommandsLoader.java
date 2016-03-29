@@ -22,19 +22,19 @@ public class CommandsLoader {
 			"com.proj3.commandExtension";
 	@Execute
 	/**
-	 * loads a plugin
+	 * Method that loads plugins from the extension registry and create the
+	 * associated Command object.
 	 */	
 	public static void load() {
 		IConfigurationElement[] config =
 				Platform.getExtensionRegistry().getConfigurationElementsFor(COMMANDEXTENSION_ID);
 		try {
 			for (IConfigurationElement e : config) {
-				System.out.println("Evaluating extension");
 				final Object o =
 						e.createExecutableExtension("class");
 				if (o instanceof ICommand) {
-					// Adds this command (plugin) to the vector of ICommands.
-					CommandsPart.addCommand((ICommand) o);
+					// Adds this command (plugin) to the vector of commands.	
+					CommandsPart.addCommand(new Command((ICommand) o));
 				}
 			}
 		} catch (CoreException ex) {
